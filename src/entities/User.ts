@@ -1,5 +1,7 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -17,44 +19,46 @@ import { UserProduct } from './UserProduct';
 
 @Index('UK_ei8jgeq8ly91ng06qp4g1m9ih', ['healthId'], { unique: true })
 @Index('UK_aa537hmoeyr4twamr5e3f88i5', ['userAdditionId'], { unique: true })
-@Index('UK_ob8kqyqqgmefl0aco34akdtpe', ['email'], { unique: true })
 @Index('UK_fhdmksaychudqqwxlp4iybsss', ['pushToken'], { unique: true })
 @Index('UK_91w957muiqgpeks88u4ettvih', ['uniqId'], { unique: true })
-@Index('UK_kbxiti095ck9nrjpey4cj61rj', ['uniqKey'], { unique: true })
 @Index('UK_sddp1uqc7iyg97m4djn1hreqt', ['calcTargetId'], { unique: true })
 @Entity('user', { schema: 'xcare_nest' })
 export class User {
+  static create(
+    uniqId: string,
+    password: string,
+    nick: string,
+    health: Health,
+    addition: UserAddition,
+  ) {
+    const user = new User();
+
+    user.nick = nick;
+    user.uniqId = uniqId;
+    user.health = health;
+    user.userAddition = addition;
+    user.password = password;
+
+    return user;
+  }
+
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'id' })
   id: string;
 
-  @Column('datetime', { name: 'created_at' })
+  @CreateDateColumn({
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
 
-  @Column('bit', { name: 'deleted' })
-  deleted: boolean;
-
-  @Column('datetime', { name: 'deleted_at', nullable: true })
+  @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date | null;
 
-  @Column('bit', { name: 'diagnose' })
+  @Column('bit', { name: 'diagnose', default: false })
   diagnose: boolean;
-
-  @Column('varchar', {
-    name: 'email',
-    nullable: true,
-    unique: true,
-    length: 45,
-  })
-  email: string | null;
-
-  @Column('datetime', { name: 'last_access' })
-  lastAccess: Date;
 
   @Column('varchar', { name: 'nick', nullable: true, length: 10 })
   nick: string | null;
-
-  @Column('varchar', { name: 'provider', length: 10 })
-  provider: string;
 
   @Column('varchar', {
     name: 'push_token',
@@ -66,14 +70,17 @@ export class User {
 
   @Column('varchar', {
     name: 'uniq_id',
-    nullable: true,
+    unique: true,
+    length: 15,
+  })
+  uniqId: string;
+
+  @Column('varchar', {
+    name: 'password',
     unique: true,
     length: 255,
   })
-  uniqId: string | null;
-
-  @Column('bigint', { name: 'uniq_key', nullable: true, unique: true })
-  uniqKey: string | null;
+  password: string;
 
   @Column('datetime', { name: 'updated_at' })
   updatedAt: Date;
