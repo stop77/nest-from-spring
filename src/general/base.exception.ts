@@ -34,6 +34,12 @@ export class NotValidInputException extends BaseException {
   }
 }
 
+export class InSuficientInputException extends BaseException {
+  constructor(message?: string) {
+    super(ExceptionCodeEnum.InSufficientInput, HttpStatus.BAD_REQUEST, message);
+  }
+}
+
 export class NotLoggedInException extends BaseException {
   constructor(message?: string) {
     super(ExceptionCodeEnum.NotLoggedIn, HttpStatus.UNAUTHORIZED, message);

@@ -3,4 +3,5 @@ export enum ExceptionCodeEnum {
   NotValidInput = '0001',
   NotLoggedIn = '0002',
   LoggedIn = '0003',
+  InSufficientInput = '0004',
 }

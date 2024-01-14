@@ -17,10 +17,11 @@ import { User } from '../general/decorator/user.decorator';
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
+
   @UseGuards(NotLoggedInGuard)
   @Post('join')
-  async createUser(@Body() dto: RequestJoinDto) {
-    return this.userService.createUser(
+  async createUser(@Body() dto: RequestJoinDto): Promise<void> {
+    return await this.userService.createUser(
       dto.uniqId,
       dto.password,
       dto.nick,
@@ -31,11 +32,11 @@ export class UserController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login() {}
+  async login(): Promise<void> {}
 
   @UseGuards(LoggedInGuard)
   @Post('logout')
-  logOut(@Req() req, @Res() res) {
+  logOut(@Req() req, @Res() res): void {
     req.logOut();
     res.clearCookie('connect.sid', { httpOnly: true });
     res.send('ok');
@@ -43,10 +44,11 @@ export class UserController {
 
   @UseGuards(LoggedInGuard)
   @Post('delete')
-  async delete(@User() user, @Req() req, @Res() res) {
-    await this.userService.deleteUser(user.uniqId);
+  async delete(@User() user, @Req() req, @Res() res): Promise<void> {
     req.logOut();
     res.clearCookie('connect.sid', { httpOnly: true });
     res.send('ok');
+
+    await this.userService.deleteUser(user.uniqId);
   }
 }

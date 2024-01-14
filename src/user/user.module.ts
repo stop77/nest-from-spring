@@ -5,7 +5,6 @@ import { User } from '../entities/User';
 import { UserController } from './user.controller';
 import { Health } from '../entities/Health';
 import { UserAddition } from '../entities/UserAddition';
-import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Health, UserAddition])],

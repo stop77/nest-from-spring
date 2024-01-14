@@ -42,7 +42,7 @@ export class UserService {
     nick: string,
     birth: Date,
     sex: string,
-  ) {
+  ): Promise<void> {
     const targetUser = await this.userRepo.findOne({ where: { uniqId } });
     if (targetUser)
       throw new NotValidInputException(`이미 존재하는 아이디입니다.`);
@@ -67,11 +67,11 @@ export class UserService {
   }
 
   @Transactional()
-  async deleteUser(uniqId: string) {
+  async deleteUser(uniqId: string): Promise<void> {
     const targetUser = await this.userRepo.findOne({ where: { uniqId } });
     if (!targetUser)
       throw new NotValidInputException('해당 아이디는 이미 존재하지 않습니다.');
 
-    return await this.userRepo.softDelete(targetUser.id);
+    await this.userRepo.softDelete(targetUser.id);
   }
 }
