@@ -7,10 +7,11 @@ import { AuthModule } from './auth/auth.module';
 import { HomeModule } from './home/home.module';
 import { ProductModule } from './product/product.module';
 import { CombinationModule } from './combination/combination.module';
+import { RecommendModule } from './recommend/recommend.module';
 import ormconfig from '../ormconfig';
 
 @Module({
-  imports: [TypeOrmModule.forRootAsync(ormconfig), UserModule, AuthModule, HomeModule, ProductModule, CombinationModule],
+  imports: [TypeOrmModule.forRootAsync(ormconfig), UserModule, AuthModule, HomeModule, ProductModule, CombinationModule, RecommendModule],
   controllers: [AppController],
   providers: [
     AppService,

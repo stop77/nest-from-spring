@@ -226,9 +226,9 @@ export class HomeService {
     userType: CalcTarget,
     productList: Product[],
   ): number[] {
-    // 비즈니스 코드로 비공개. 따라서 항상 [0, 0]을 리턴하도록 설정.
-    const num1 = 0;
-    const num2 = 0;
+    // 비즈니스 코드로 비공개 처리. Response 견본을 리턴.
+    const num1 = 840;
+    const num2 = 1200;
 
     return [num1, num2];
   }
