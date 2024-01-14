@@ -19,6 +19,9 @@ import { UserIntaking } from './src/entities/UserIntaking';
 import { UserProduct } from './src/entities/UserProduct';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DataSource } from 'typeorm';
+import { ProductAlert } from './src/entities/ProductAlert';
+import { ProductFunc } from './src/entities/ProductFunc';
+import { ProductSideEffect } from './src/entities/ProductSideEffect';
 
 dotenv.config();
 
@@ -48,6 +51,9 @@ const config: TypeOrmModuleAsyncOptions = {
       UserAddition,
       UserIntaking,
       UserProduct,
+      ProductAlert,
+      ProductFunc,
+      ProductSideEffect,
     ],
     charset: 'utf8mb4',
     synchronize: false,

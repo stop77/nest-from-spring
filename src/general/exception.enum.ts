@@ -5,4 +5,5 @@ export enum ExceptionCodeEnum {
   LoggedIn = '0003',
   InSufficientInput = '0004',
   TangledDB = '0005',
+  ValidationPipe = '0006',
 }

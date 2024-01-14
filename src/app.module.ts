@@ -8,10 +8,11 @@ import { HomeModule } from './home/home.module';
 import { ProductModule } from './product/product.module';
 import { CombinationModule } from './combination/combination.module';
 import { RecommendModule } from './recommend/recommend.module';
+import { SearchModule } from './search/search.module';
 import ormconfig from '../ormconfig';
 
 @Module({
-  imports: [TypeOrmModule.forRootAsync(ormconfig), UserModule, AuthModule, HomeModule, ProductModule, CombinationModule, RecommendModule],
+  imports: [TypeOrmModule.forRootAsync(ormconfig), UserModule, AuthModule, HomeModule, ProductModule, CombinationModule, RecommendModule, SearchModule],
   controllers: [AppController],
   providers: [
     AppService,
