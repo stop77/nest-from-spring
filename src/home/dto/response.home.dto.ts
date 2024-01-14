@@ -1,6 +1,6 @@
 export class ResponseHomeDto {
-  myScore: number;
-  totalScore: number;
+  private myScore: number;
+  private totalScore: number;
 
   constructor(myScore: number, totalScore: number) {
     this.myScore = myScore;

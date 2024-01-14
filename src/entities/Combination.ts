@@ -22,9 +22,6 @@ export class Combination {
   @Column('datetime', { name: 'last_updated_at' })
   lastUpdatedAt: Date;
 
-  @Column('int', { name: 'month_expenses' })
-  monthExpenses: number;
-
   @Column('varchar', { name: 'name', length: 255 })
   name: string;
 

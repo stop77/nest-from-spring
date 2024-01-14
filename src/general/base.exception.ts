@@ -40,6 +40,15 @@ export class InSuficientInputException extends BaseException {
   }
 }
 
+export class TangledDBException extends BaseException {
+  constructor(message?: string) {
+    super(
+      ExceptionCodeEnum.TangledDB,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      message,
+    );
+  }
+}
 export class NotLoggedInException extends BaseException {
   constructor(message?: string) {
     super(ExceptionCodeEnum.NotLoggedIn, HttpStatus.UNAUTHORIZED, message);
