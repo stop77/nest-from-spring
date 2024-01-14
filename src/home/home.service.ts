@@ -226,7 +226,7 @@ export class HomeService {
     userType: CalcTarget,
     productList: Product[],
   ): number[] {
-    // 비즈니스 핵심 코드로 비공개. 따라서 항상 [0, 0]을 리턴하도록 설정.
+    // 비즈니스 코드로 비공개. 따라서 항상 [0, 0]을 리턴하도록 설정.
     const num1 = 0;
     const num2 = 0;
 

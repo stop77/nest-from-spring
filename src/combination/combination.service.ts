@@ -13,13 +13,24 @@ import {
   TangledDBException,
 } from '../general/base.exception';
 import { Transactional } from 'typeorm-transactional';
+import { ProductCombination } from '../entities/ProductCombination';
+import { Product } from '../entities/Product';
+import {
+  ResponseCompareDto,
+  RmaDifferenceDto,
+} from './dto/response.compare.dto';
 
 @Injectable()
 export class CombinationService {
   constructor(
     @InjectRepository(Combination)
     private combRepo: Repository<Combination>,
+    @InjectRepository(Product)
+    private prodRepo: Repository<Product>,
+    @InjectRepository(ProductCombination)
+    private prodCombRepo: Repository<ProductCombination>,
   ) {}
+
   async getCombinations(user: User): Promise<ResponseCombinationDto[]> {
     const results = await this.combRepo
       .createQueryBuilder('combination')
@@ -124,10 +135,108 @@ export class CombinationService {
     await this.combRepo.delete(targetComb);
   }
 
+  async changeCombinationName(user: User, before: string, after: string) {
+    const targetBefore = await this.combRepo.findOne({
+      where: { userId: user.id, name: before },
+    });
+    if (!targetBefore)
+      throw new NotValidInputException('해당 이름을 가진 조합이 없습니다.');
+
+    const targetAfter = await this.combRepo.findOne({
+      where: { userId: user.id, name: after },
+    });
+    if (targetAfter)
+      throw new NotValidInputException(
+        '변경하고자 하는 이름을 가진 조합이 이미 존재합니다.',
+      );
+
+    await this.combRepo.update(targetBefore.id, { name: after });
+  }
+
+  async addProductIntoCombination(
+    user: User,
+    combName: string,
+    serial: string,
+  ) {
+    const targetComb = await this.combRepo.findOne({
+      where: { userId: user.id, name: combName },
+    });
+    if (!targetComb)
+      throw new NotValidInputException('해당 이름을 가진 조합이 없습니다.');
+
+    let count = await this.combRepo
+      .createQueryBuilder('combination')
+      .innerJoin('combination.productCombinations', 'prodCombs')
+      .innerJoin('prodCombs.product', 'product', 'product.serial = :serial', {
+        serial,
+      })
+      .getCount();
+
+    if (count >= 1)
+      throw new NotValidInputException(
+        '해당 조합에 이미 해당 제품이 존재합니다.',
+      );
+    else if (count === 0) {
+      const targetProduct = await this.prodRepo.findOne({ where: { serial } });
+      const res = new ProductCombination();
+      res.combinationId = targetComb.id;
+      res.productId = targetProduct.id;
+
+      await this.prodCombRepo.save(res);
+    } else throw new TangledDBException('관리자에게 문의해주세요.');
+  }
+
+  async removeProductFromCombination(
+    user: User,
+    combName: string,
+    serial: string,
+  ) {
+    const targetComb = await this.combRepo.findOne({
+      where: { userId: user.id, name: combName },
+    });
+    if (!targetComb)
+      throw new NotValidInputException('해당 이름을 가진 조합이 없습니다.');
+
+    const targetProdComb = await this.prodCombRepo
+      .createQueryBuilder('productCombinations')
+      .innerJoin(
+        'productCombinations.product',
+        'product',
+        'product.serial = :serial',
+        {
+          serial,
+        },
+      )
+      .where('productCombinations.combinationId=:combId', {
+        combId: targetComb.id,
+      })
+      .getOne();
+
+    if (!targetProdComb)
+      throw new NotValidInputException('해당 조합에 해당 제품이 없습니다.');
+    await this.prodCombRepo.delete(targetProdComb);
+  }
+
+  async compareNutritionScore(
+    user: User,
+    adders: string[],
+    reducers: string[],
+  ): Promise<ResponseCompareDto> {
+    // 비즈니스 코드로 비공개 처리. Response 견본을 리턴.
+    const feeder: RmaDifferenceDto[] = [];
+    feeder.push(new RmaDifferenceDto('비타민C', 20, 17, 200, 'ug'));
+    feeder.push(new RmaDifferenceDto('비타민E', 20, 17, 200, 'ug'));
+    feeder.push(new RmaDifferenceDto('마그네슘', 20, 17, 200, 'ug'));
+    feeder.push(new RmaDifferenceDto('비타민A', 20, 17, 200, 'ug'));
+    const res = new ResponseCompareDto(120, 8000, 800, 12000, feeder);
+    return res;
+  }
+
   private getResponseFromQueryDto(
     before: CombQueryRawDto[],
   ): ResponseCombinationDto[] {
     const resMap = new Map<string, CombQueryDto>();
+
     go(
       before,
       map((a: CombQueryRawDto) => {
