@@ -5,12 +5,19 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { Product } from './Product';
 
-@Index('UKma3177mnb6aw4odia4dh19fmg', ['func', 'productId'], { unique: true })
+@Unique('UKma3177mnb6aw4odia4dh19fmg', ['func', 'productId'])
 @Entity('product_func', { schema: 'xcare_nest' })
 export class ProductFunc {
+  static create(product: Product, func: string) {
+    const res = new ProductFunc();
+    res.productId = product.id;
+    res.func = func;
+    return res;
+  }
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'id' })
   id: string;
 

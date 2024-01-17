@@ -5,14 +5,20 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { Product } from './Product';
 
-@Index('UKgkxxgyffss5eiiccp1ejx7dqs', ['sideEffect', 'productId'], {
-  unique: true,
-})
+@Unique('UKgkxxgyffss5eiiccp1ejx7dqs', ['sideEffect', 'productId'])
 @Entity('product_side_effect', { schema: 'xcare_nest' })
 export class ProductSideEffect {
+  static create(product: Product, se: string) {
+    const res = new ProductSideEffect();
+    res.productId = product.id;
+    res.sideEffect = se;
+    return res;
+  }
+
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'id' })
   id: string;
 

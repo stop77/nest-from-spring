@@ -60,3 +60,25 @@ export class LoggedInException extends BaseException {
     super(ExceptionCodeEnum.LoggedIn, HttpStatus.BAD_REQUEST, message);
   }
 }
+
+export class PassportValidationException {
+  constructor() {
+    this.message = '';
+    this.error = '';
+    this.statusCode = 0;
+  }
+  message: string;
+  error: string;
+  statusCode: number;
+}
+export class PipeException {
+  constructor() {
+    this.message = [];
+    this.error = '';
+    this.statusCode = 0;
+  }
+
+  message: string[];
+  error: string;
+  statusCode: number;
+}

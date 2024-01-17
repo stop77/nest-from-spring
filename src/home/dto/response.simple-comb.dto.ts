@@ -1,6 +1,6 @@
 export class ResponseSimpleCombDto {
-  combName: string;
-  combSerialList: string[];
+  private combName: string;
+  private combSerialList: string[];
 
   constructor(combName: string, combSerialList: string[]) {
     this.combName = combName;

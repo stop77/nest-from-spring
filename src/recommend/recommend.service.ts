@@ -28,13 +28,7 @@ export class RecommendService {
       where: { userId: user.id },
     });
     if (target == null) {
-      target = new RecommendCache();
-      target.userId = user.id;
-      target.cacheFlag = false;
-      target.additionalPrice = 0;
-      target.additionalScore = 0;
-      target.originalScore = 0;
-
+      target = RecommendCache.create(user);
       target = await this.cacheRepo.save(target);
     }
 

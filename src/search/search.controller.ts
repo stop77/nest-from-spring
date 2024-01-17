@@ -1,9 +1,11 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
 import { SearchService } from './search.service';
 import { User } from '../general/decorator/user.decorator';
 import { RequestSearchDto } from './dto/request.search.dto';
 import { ResponseSearchDto } from './dto/response.search.dto';
+import { LoggedInGuard } from '../auth/logged-in.guard';
 
+@UseGuards(LoggedInGuard)
 @Controller('search')
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}

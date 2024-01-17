@@ -6,19 +6,24 @@ export class ResponseCombinationDto {
   private serialList: string[];
   private lastUpdatedAt: Date;
 
+  addToRmaList(value: string) {
+    this.rmaList.push(value);
+  }
+  addToSerialList(value: string) {
+    this.serialList.push(value);
+  }
+
   constructor(
     combName: string,
     imgUrl: string,
     isDefault: boolean,
-    rmaList: string[],
-    serialList: string[],
     lastUpdatedAt: Date,
   ) {
     this.combName = combName;
     this.imgUrl = imgUrl;
     this.isDefault = isDefault;
-    this.rmaList = rmaList;
-    this.serialList = serialList;
+    this.rmaList = [];
+    this.serialList = [];
     this.lastUpdatedAt = lastUpdatedAt;
   }
 }

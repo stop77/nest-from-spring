@@ -12,9 +12,9 @@ export class LocalSerializer extends PassportSerializer {
   serializeUser(user: User, done: CallableFunction) {
     done(null, user.uniqId);
   }
-  async deserializeUser(payload: string, done: CallableFunction) {
+  async deserializeUser(uniqId: string, done: CallableFunction) {
     return await this.userRepo
-      .findOneOrFail({ where: { uniqId: payload } })
+      .findOneOrFail({ where: { uniqId } })
       .then((user) => {
         done(null, user);
       })

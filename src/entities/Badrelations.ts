@@ -7,9 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { HffRma } from './HffRma';
-import { MedicAi } from './MedicAi';
 
-@Index('FKs23vwssd29mh5uneiq40b2gio', ['medicAiId'], {})
 @Index('FKpexcd6wlyc8e534mtlsc491h3', ['hffRmaId'], {})
 @Entity('badrelations', { schema: 'xcare_nest' })
 export class Badrelations {
@@ -28,9 +26,6 @@ export class Badrelations {
   @Column('varchar', { name: 'side_effect', length: 200 })
   sideEffect: string;
 
-  @Column('bigint', { name: 'medic_ai_id' })
-  medicAiId: string;
-
   @Column('bigint', { name: 'hff_rma_id' })
   hffRmaId: string;
 
@@ -40,11 +35,4 @@ export class Badrelations {
   })
   @JoinColumn([{ name: 'hff_rma_id', referencedColumnName: 'hffRmaId' }])
   hffRma: HffRma;
-
-  @ManyToOne(() => MedicAi, (medicAi) => medicAi.badrelations, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'medic_ai_id', referencedColumnName: 'medicAiId' }])
-  medicAi: MedicAi;
 }

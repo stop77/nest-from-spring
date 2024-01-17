@@ -36,21 +36,21 @@ export class SearchService {
       query.innerJoinAndSelect(
         'product.productRmas',
         'prodRma',
-        'prodRma.rmaId IN (:rmaIdList)',
+        'prodRma.rmaId IN (:...rmaIdList)',
         { rmaIdList },
       );
     if (alertTags.length > 0)
       query.innerJoinAndSelect(
         'product.productAlerts',
         'prodAlert',
-        'prodAlert.alert NOT IN (:alertTags)',
+        'prodAlert.alert NOT IN (:...alertTags)',
         { alertTags },
       );
     if (funcTags.length > 0)
       query.innerJoinAndSelect(
         'product.productFuncs',
         'prodFunc',
-        'prodFunc.func IN (:funcTags)',
+        'prodFunc.func IN (:...funcTags)',
         { funcTags },
       );
 
@@ -58,7 +58,7 @@ export class SearchService {
       query.innerJoinAndSelect(
         'product.productSideEffects',
         'prodSide',
-        'prodSide.sideEffect NOT IN (:sideEffectTags)',
+        'prodSide.sideEffect NOT IN (:...sideEffectTags)',
         { sideEffectTags },
       );
 

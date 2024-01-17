@@ -7,16 +7,10 @@ import { CalcTarget } from './src/entities/CalcTarget';
 import { Combination } from './src/entities/Combination';
 import { Health } from './src/entities/Health';
 import { HffRma } from './src/entities/HffRma';
-import { MedicAi } from './src/entities/MedicAi';
-import { MedicProduct } from './src/entities/MedicProduct';
-import { MedicProductAi } from './src/entities/MedicProductAi';
-import { NutritionScore } from './src/entities/NutritionScore';
 import { Product } from './src/entities/Product';
 import { ProductCombination } from './src/entities/ProductCombination';
 import { ProductRma } from './src/entities/ProductRma';
 import { RecommendCache } from './src/entities/RecommendCache';
-import { UserIntaking } from './src/entities/UserIntaking';
-import { UserProduct } from './src/entities/UserProduct';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DataSource } from 'typeorm';
 import { ProductAlert } from './src/entities/ProductAlert';
@@ -39,18 +33,12 @@ const config: TypeOrmModuleAsyncOptions = {
       Combination,
       Health,
       HffRma,
-      MedicAi,
-      MedicProduct,
-      MedicProductAi,
-      NutritionScore,
       Product,
       ProductCombination,
       ProductRma,
       RecommendCache,
       User,
       UserAddition,
-      UserIntaking,
-      UserProduct,
       ProductAlert,
       ProductFunc,
       ProductSideEffect,

@@ -3,13 +3,7 @@ import { Exclude, Expose } from 'class-transformer';
 @Exclude()
 export class CombQueryRawDto {
   @Expose()
-  private combName: string;
-
-  @Expose()
-  private serial: string;
-
-  @Expose()
-  private rmaName: string;
+  private id: string;
 
   @Expose()
   private isDefault: boolean;
@@ -18,24 +12,30 @@ export class CombQueryRawDto {
   private lastUpdatedAt: Date;
 
   @Expose()
+  private name: string;
+
+  @Expose()
   private imgUrl: string;
 
-  getImgUrl() {
-    return this.imgUrl;
-  }
+  @Expose()
+  private serial: string;
 
+  @Expose()
+  private rmaName: string;
+
+  getCombName() {
+    return this.name;
+  }
   getLastUpdatedAt() {
     return this.lastUpdatedAt;
+  }
+  getImgUrl() {
+    return this.imgUrl;
   }
 
   getIsDefault() {
     return this.isDefault;
   }
-
-  getCombName() {
-    return this.combName;
-  }
-
   getSerial() {
     return this.serial;
   }

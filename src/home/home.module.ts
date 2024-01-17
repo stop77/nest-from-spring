@@ -8,6 +8,11 @@ import { CalcTarget } from '../entities/CalcTarget';
 import { ProductService } from '../product/product.service';
 import { Combination } from '../entities/Combination';
 import { Product } from '../entities/Product';
+import { ProductRma } from '../entities/ProductRma';
+import { ProductAlert } from '../entities/ProductAlert';
+import { ProductFunc } from '../entities/ProductFunc';
+import { ProductSideEffect } from '../entities/ProductSideEffect';
+import { HffRma } from '../entities/HffRma';
 
 @Module({
   imports: [
@@ -17,6 +22,11 @@ import { Product } from '../entities/Product';
       CalcTarget,
       Combination,
       Product,
+      ProductRma,
+      ProductAlert,
+      ProductFunc,
+      ProductSideEffect,
+      HffRma,
     ]),
   ],
   controllers: [HomeController],

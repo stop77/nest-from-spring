@@ -4,9 +4,9 @@ import { ResponseCombinationDto } from './dto/response.combination.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Combination } from '../entities/Combination';
 import { Repository } from 'typeorm';
-import { filter, go, map } from '../general/fx';
+import { C, filter, go, map, reduce } from '../general/fx';
 import { plainToInstance } from 'class-transformer';
-import { CombQueryRawDto, CombQueryDto } from './dto/combination.query.dto';
+import { CombQueryRawDto } from './dto/combination.query.dto';
 import {
   InSuficientInputException,
   NotValidInputException,
@@ -32,31 +32,68 @@ export class CombinationService {
   ) {}
 
   async getCombinations(user: User): Promise<ResponseCombinationDto[]> {
-    const results = await this.combRepo
-      .createQueryBuilder('combination')
-      .innerJoin(
-        'combination.productCombinations',
-        'prodCombs',
-        'combination.userId=:userId',
-        { userId: user.id },
-      )
-      .innerJoin('prodCombs.product', 'product')
+    // 중복 데이터를 가져오긴 하지만 한방 vs 중복 데이터 없이 인당 조합 수 만큼 쿼리 날리기
+    // 일단 한방으로 구현.
+    const queryRawList = await this.combRepo
+      .createQueryBuilder('comb')
+      .where('comb.user_id=:userId', { userId: user.id })
+      .innerJoin('comb.productCombinations', 'prodComb')
+      .innerJoin('prodComb.product', 'product')
       .innerJoin('product.productRmas', 'prodRma')
       .innerJoin('prodRma.rma', 'rma')
-      .select('combination.name', 'combName')
-      .addSelect('combination.defaults', 'isDefault')
-      .addSelect('combination.lastUpdatedAt', 'lastUpdatedAt')
-      .addSelect('combination.thumbnail', 'imgUrl')
-      .addSelect('product.serial', 'serial')
-      .addSelect('rma.name', 'rmaName')
+      .select([
+        'comb.id AS id',
+        'comb.defaults AS isDefault',
+        'comb.last_updated_at AS lastUpdatedAt',
+        'comb.name AS name',
+        'comb.thumbnail AS imgUrl',
+        'product.serial AS serial',
+        'rma.name AS rmaName',
+      ])
       .getRawMany();
 
-    const resBefore: CombQueryRawDto[] = plainToInstance(
-      CombQueryRawDto,
-      results,
+    const plainedResults = plainToInstance(CombQueryRawDto, queryRawList);
+
+    const res: Map<string, ResponseCombinationDto> = new Map();
+    const rmaSet = new Set<string>();
+    const serialSet = new Set<string>();
+
+    go(
+      plainedResults,
+      map((a: CombQueryRawDto) => {
+        const target = res.get(a.getCombName());
+        if (target) {
+          if (!rmaSet.has(a.getRmaName())) {
+            rmaSet.add(a.getRmaName());
+            target.addToRmaList(a.getRmaName());
+          }
+          if (!serialSet.has(a.getSerial())) {
+            serialSet.add(a.getSerial());
+            target.addToSerialList(a.getSerial());
+          }
+        } else {
+          rmaSet.clear();
+          serialSet.clear();
+          const target = new ResponseCombinationDto(
+            a.getCombName(),
+            a.getImgUrl(),
+            a.getIsDefault(),
+            a.getLastUpdatedAt(),
+          );
+          res.set(a.getCombName(), target);
+
+          rmaSet.add(a.getRmaName());
+          target.addToRmaList(a.getRmaName());
+          serialSet.add(a.getSerial());
+          target.addToSerialList(a.getSerial());
+        }
+      }),
     );
 
-    return this.getResponseFromQueryDto(resBefore);
+    return go(
+      res,
+      map((a) => a[1]), // JS Map 구조 상 [0]이 키, [1]이 값으로, 값만 빼오려면 a[1]을 리턴.
+    );
   }
 
   @Transactional()
@@ -72,12 +109,7 @@ export class CombinationService {
     )
       throw new NotValidInputException('해당 조합 이름을 이미 사용중 입니다.');
 
-    const newComb = new Combination();
-    newComb.defaults = false;
-    newComb.name = combName;
-    newComb.userId = user.id;
-    newComb.thumbnail = imgUrl;
-
+    const newComb = Combination.create(user, combName, imgUrl);
     await this.combRepo.save(newComb);
   }
 
@@ -170,6 +202,7 @@ export class CombinationService {
       .innerJoin('prodCombs.product', 'product', 'product.serial = :serial', {
         serial,
       })
+      .where('combination.id=:combId', { combId: targetComb.id })
       .getCount();
 
     if (count >= 1)
@@ -229,53 +262,6 @@ export class CombinationService {
     feeder.push(new RmaDifferenceDto('마그네슘', 20, 17, 200, 'ug'));
     feeder.push(new RmaDifferenceDto('비타민A', 20, 17, 200, 'ug'));
     const res = new ResponseCompareDto(120, 8000, 800, 12000, feeder);
-    return res;
-  }
-
-  private getResponseFromQueryDto(
-    before: CombQueryRawDto[],
-  ): ResponseCombinationDto[] {
-    const resMap = new Map<string, CombQueryDto>();
-
-    go(
-      before,
-      map((a: CombQueryRawDto) => {
-        let target: CombQueryDto = resMap.get(a.getCombName());
-        if (target) {
-          target.rmaNameList.add(a.getRmaName());
-          target.serialList.add(a.getSerial());
-
-          resMap.set(a.getCombName(), target);
-        } else {
-          target = new CombQueryDto(
-            a.getCombName(),
-            a.getImgUrl(),
-            a.getIsDefault(),
-            a.getLastUpdatedAt(),
-          );
-          target.rmaNameList.add(a.getRmaName());
-          target.serialList.add(a.getSerial());
-
-          resMap.set(a.getCombName(), target);
-        }
-      }),
-    );
-
-    const res: ResponseCombinationDto[] = go(
-      resMap.values(),
-      map(
-        (a: CombQueryDto) =>
-          new ResponseCombinationDto(
-            a.combName,
-            a.imgUrl,
-            a.isDefault,
-            [...a.rmaNameList],
-            [...a.serialList],
-            a.lastUpdatedAt,
-          ),
-      ),
-    );
-
     return res;
   }
 }

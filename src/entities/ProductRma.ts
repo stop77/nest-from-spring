@@ -5,14 +5,23 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { HffRma } from './HffRma';
 import { Product } from './Product';
 
 @Index('i_rma_vol', ['rmaId', 'stdAmountBefore'], {})
-@Index('FKemgn8v4jis6utkce9peajkc8a', ['productId'], {})
+@Unique('prod_rma_unique', ['rmaId', 'productId'])
 @Entity('product_rma', { schema: 'xcare_nest' })
 export class ProductRma {
+  static create(product: Product, rma: HffRma) {
+    const res = new ProductRma();
+    res.productId = product.id;
+    res.rmaId = rma.hffRmaId;
+
+    return res;
+  }
+
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'id' })
   id: string;
 

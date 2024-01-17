@@ -4,10 +4,10 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { ProductCombination } from './ProductCombination';
 import { ProductRma } from './ProductRma';
-import { UserProduct } from './UserProduct';
 import { ProductFunc } from './ProductFunc';
 import { ProductSideEffect } from './ProductSideEffect';
 import { ProductAlert } from './ProductAlert';
@@ -16,10 +16,32 @@ import { ProductAlert } from './ProductAlert';
 @Index('i_gubun', ['gubun'], {})
 @Entity('product', { schema: 'xcare_nest' })
 export class Product {
+  static create(
+    gubun: string,
+    image: string,
+    manufacturer: string,
+    name: string,
+    serial: string,
+    price: number,
+  ) {
+    const res = new Product();
+    res.gubun = gubun;
+    res.image = image;
+    res.manufacturer = manufacturer;
+    res.name = name;
+    res.serial = serial;
+    res.price = price.toString();
+
+    res.activated = true;
+    res.totalFavorites = '0';
+    res.views = '0';
+
+    return res;
+  }
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'id' })
   id: string;
 
-  @Column('bit', { name: 'activated' })
+  @Column('tinyint', { name: 'activated' })
   activated: boolean;
 
   @Column('varchar', { name: 'gubun', length: 255 })
@@ -28,7 +50,12 @@ export class Product {
   @Column('varchar', { name: 'image', length: 255 })
   image: string;
 
-  @Column('datetime', { name: 'last_updated_at' })
+  @UpdateDateColumn({
+    name: 'last_updated_at',
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
   lastUpdatedAt: Date;
 
   @Column('varchar', { name: 'manufacturer', length: 255 })
@@ -57,9 +84,6 @@ export class Product {
 
   @OneToMany(() => ProductRma, (productRma) => productRma.product)
   productRmas: ProductRma[];
-
-  @OneToMany(() => UserProduct, (userProduct) => userProduct.product)
-  userProducts: UserProduct[];
 
   @OneToMany(() => ProductAlert, (productAlert) => productAlert.product)
   productAlerts: ProductAlert[];

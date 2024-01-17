@@ -7,3 +7,7 @@ export enum ExceptionCodeEnum {
   TangledDB = '0005',
   ValidationPipe = '0006',
 }
+
+export enum DbExceptionEnum {
+  DUPLICATE_KEY = 'EN_DUP_ENTRY',
+}

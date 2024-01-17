@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CombinationService } from './combination.service';
 import { User } from '../general/decorator/user.decorator';
 import { ResponseCombinationDto } from './dto/response.combination.dto';
@@ -6,7 +6,9 @@ import { RequestCreateCombDto } from './dto/request.create.combination.dto';
 import { RequestChangeCombNameDto } from './dto/request.change.combination.dto';
 import { RequestProductHandlingDto } from './dto/request.product-handling.dto';
 import { RequestCompareDto } from './dto/request.compare.dto';
+import { LoggedInGuard } from '../auth/logged-in.guard';
 
+@UseGuards(LoggedInGuard)
 @Controller('combination')
 export class CombinationController {
   constructor(private readonly combService: CombinationService) {}
@@ -24,7 +26,7 @@ export class CombinationController {
     await this.combService.changeDefaultCombination(user, combName);
   }
 
-  @Post('create/:combName')
+  @Post('create')
   async createCombination(@User() user, @Body() dto: RequestCreateCombDto) {
     await this.combService.createCombination(user, dto.combName, dto.imgUrl);
   }

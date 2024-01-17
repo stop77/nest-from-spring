@@ -14,8 +14,11 @@ import { RecommendCache } from './RecommendCache';
 import { Health } from './Health';
 import { UserAddition } from './UserAddition';
 import { CalcTarget } from './CalcTarget';
-import { UserIntaking } from './UserIntaking';
-import { UserProduct } from './UserProduct';
+
+export enum UserRoleEnum {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
 
 @Index('UK_ei8jgeq8ly91ng06qp4g1m9ih', ['healthId'], { unique: true })
 @Index('UK_aa537hmoeyr4twamr5e3f88i5', ['userAdditionId'], { unique: true })
@@ -38,6 +41,7 @@ export class User {
     user.health = health;
     user.userAddition = addition;
     user.password = password;
+    user.role = UserRoleEnum.USER;
 
     return user;
   }
@@ -54,7 +58,10 @@ export class User {
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date | null;
 
-  @Column('bit', { name: 'diagnose', default: false })
+  @Column('tinyint', {
+    name: 'diagnose',
+    default: false,
+  })
   diagnose: boolean;
 
   @Column('varchar', { name: 'nick', nullable: true, length: 10 })
@@ -82,6 +89,13 @@ export class User {
   })
   password: string;
 
+  @Column('varchar', {
+    name: 'role',
+    length: 10,
+    default: () => 'USER',
+  })
+  role: string;
+
   @Column('datetime', { name: 'updated_at' })
   updatedAt: Date;
 
@@ -101,29 +115,23 @@ export class User {
   recommendCache: RecommendCache;
 
   @OneToOne(() => Health, (health) => health.user, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'health_id', referencedColumnName: 'id' }])
   health: Health;
 
   @OneToOne(() => UserAddition, (userAddition) => userAddition.user, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_addition_id', referencedColumnName: 'id' }])
   userAddition: UserAddition;
 
   @OneToOne(() => CalcTarget, (calcTarget) => calcTarget.user, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'calc_target_id', referencedColumnName: 'id' }])
   calcTarget: CalcTarget;
-
-  @OneToMany(() => UserIntaking, (userIntaking) => userIntaking.user)
-  userIntakings: UserIntaking[];
-
-  @OneToMany(() => UserProduct, (userProduct) => userProduct.user)
-  userProducts: UserProduct[];
 }

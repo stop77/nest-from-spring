@@ -22,16 +22,25 @@ export class Health {
   @Column('double', { name: 'height', nullable: true, precision: 22 })
   height: number | null;
 
-  @Column('bit', { name: 'lactate', nullable: true })
+  @Column('tinyint', {
+    name: 'lactate',
+    nullable: true,
+  })
   lactate: boolean | null;
 
-  @Column('bit', { name: 'pregnant', nullable: true })
+  @Column('tinyint', {
+    name: 'pregnant',
+    nullable: true,
+  })
   pregnant: boolean | null;
 
   @Column('varchar', { name: 'sex', nullable: true, length: 1 })
   sex: string | null;
 
-  @Column('bit', { name: 'smoke', nullable: true })
+  @Column('tinyint', {
+    name: 'smoke',
+    nullable: true,
+  })
   smoke: boolean | null;
 
   @Column('datetime', { name: 'updated_at', nullable: true })

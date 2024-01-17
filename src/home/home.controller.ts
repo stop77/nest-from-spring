@@ -1,9 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { HomeService } from './home.service';
 import { User } from '../general/decorator/user.decorator';
 import { ResponseHomeDto } from './dto/response.home.dto';
 import { ResponseSimpleCombDto } from './dto/response.simple-comb.dto';
+import { LoggedInGuard } from '../auth/logged-in.guard';
 
+@UseGuards(LoggedInGuard)
 @Controller('home')
 export class HomeController {
   constructor(private readonly homeService: HomeService) {}

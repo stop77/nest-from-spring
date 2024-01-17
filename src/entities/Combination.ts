@@ -6,20 +6,40 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from './User';
 import { ProductCombination } from './ProductCombination';
+import { BoolTinyintTransformer } from '../general/transformer';
 
 @Index('UK4uxtqhkm16fhp8vnhvgfypan6', ['userId', 'name'], { unique: true })
 @Entity('combination', { schema: 'xcare_nest' })
 export class Combination {
+  static create(user: User, name: string, imgUrl: string) {
+    const newComb = new Combination();
+    newComb.defaults = false;
+    newComb.name = name;
+    newComb.userId = user.id;
+    newComb.thumbnail = imgUrl;
+    return newComb;
+  }
+
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'id' })
   id: string;
 
-  @Column('bit', { name: 'defaults', default: false })
+  @Column('tinyint', {
+    name: 'defaults',
+    default: false,
+    transformer: new BoolTinyintTransformer(),
+  })
   defaults: boolean;
 
-  @Column('datetime', { name: 'last_updated_at' })
+  @UpdateDateColumn({
+    name: 'last_updated_at',
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
   lastUpdatedAt: Date;
 
   @Column('varchar', { name: 'name', length: 255 })

@@ -83,9 +83,7 @@ export class HomeService {
       .select('product.serial', 'serial')
       .getRawMany();
 
-    let result: ResponseSimpleCombDto = { combName: comb.name, combSerialList };
-
-    return result;
+    return new ResponseSimpleCombDto(comb.name, combSerialList);
   }
 
   private async getUserType(user: User): Promise<CalcTarget> {
