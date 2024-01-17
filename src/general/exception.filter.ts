@@ -13,12 +13,28 @@ import {
 import { format, getNow } from './format.date';
 import { ExceptionCodeEnum } from './exception.enum';
 import { validateClass } from './validation';
+import { ApiProperty } from '@nestjs/swagger';
 
-class ExceptionPackage {
+export class ExceptionPackage {
+  @ApiProperty({ example: false, description: '성공 여부' })
   success: boolean;
+
+  @ApiProperty({
+    example: ExceptionCodeEnum.NotValidInput,
+    description: 'ExceptionCodeEnum 값',
+  })
   errorCode: string | object;
+
+  @ApiProperty({
+    example: '잘못된 입력값입니다.',
+    description: '에러를 설명하는 메시지',
+  })
   message: string;
+
+  @ApiProperty({ description: '발생 시간' })
   timestamp: string;
+
+  @ApiProperty({ example: 'combination/create', description: 'API 요청 주소' })
   path: string;
 }
 @Catch(HttpException)

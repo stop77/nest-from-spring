@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
 import { PackageInterceptor } from './general/package.interceptor';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -27,6 +28,16 @@ async function bootstrap() {
   } else {
     app.enableCors({ origin: true, credentials: true });
   }
+
+  const config = new DocumentBuilder()
+    .setTitle('xcare_nest API')
+    .setDescription('xcare_nest 개발을 위한 API 문서')
+    .setVersion('1.0')
+    .addCookieAuth('connect.sid')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   app.use(cookieParser());
   app.use(

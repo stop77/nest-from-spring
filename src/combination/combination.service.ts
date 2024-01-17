@@ -161,8 +161,8 @@ export class CombinationService {
         '해당 이름을 가진 조합이 존재하지 않습니다.',
       );
 
-    if (targetComb.defaults)
-      throw new NotValidInputException('기본 조합을 삭제할 수는 없습니다.');
+    // if (targetComb.defaults)
+    //   throw new NotValidInputException('기본 조합을 삭제할 수는 없습니다.');
 
     await this.combRepo.delete(targetComb);
   }
